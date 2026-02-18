@@ -13,15 +13,21 @@ def get_db_connection():
     url = urlparse(dsn)
     query_params = parse_qs(url.query)
 
-    dbname = url.path.lstrip("/")  # quitar la barra inicial
+    # Extraer valores correctamente
+    dbname = url.path.lstrip("/")   # "prueba"
+    user = url.username             # "neondb_owner"
+    password = url.password         # tu contraseña
+    host = url.hostname             # host de NeonDB
+    port = url.port or 5432
+    sslmode = query_params.get("sslmode", ["require"])[0]
 
     conn_str = (
         f"dbname={dbname} "
-        f"user={url.username} "
-        f"password={url.password} "
-        f"host={url.hostname} "
-        f"port={url.port or 5432} "
-        f"sslmode={query_params.get('sslmode', ['require'])[0]}"
+        f"user={user} "
+        f"password={password} "
+        f"host={host} "
+        f"port={port} "
+        f"sslmode={sslmode}"
     )
 
     print("Connection string:", conn_str)
