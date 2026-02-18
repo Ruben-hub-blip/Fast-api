@@ -1,13 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from app.routes import router as login_router  # Importa el router de login
-import os
+from app.routes import router  # Importa SOLO de routes/__init__.py
 
 app = FastAPI()
 
-# Configurar CORS
 origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -16,12 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Incluir rutas
-app.include_router(login_router)
-
-# Servir archivos estáticos (para el frontend)
-# Si tienes una carpeta "static" con tu HTML y JS
-# app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(router)  # Incluye el router
 
 @app.get("/")
 def read_root():
@@ -29,15 +22,11 @@ def read_root():
         "mensaje": "API funcionando correctamente",
         "endpoints": {
             "login": "POST /login",
-            "docs": "/docs",
-            "redoc": "/redoc"
+            "login_test": "GET /login-test",
+            "docs": "/docs"
         }
     }
 
 @app.get("/health")
 async def health_check():
-    """Endpoint para verificar que la API está funcionando"""
-    return {
-        "status": "healthy",
-        "database_url": "configurada" if os.getenv("DATABASE_URL") else "no configurada"
-    }
+    return {"status": "healthy", "database_url": "configurada"}
