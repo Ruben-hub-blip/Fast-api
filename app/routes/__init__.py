@@ -1,4 +1,4 @@
-# app/routes/__init__.py
-from .login_routes import router
-
-__all__ = ["router"]
+# Endpoint de prueba
+@router.get("/login-test")
+async def login_test():
+    return {"mensaje": "Endpoint de login funcionando"}
