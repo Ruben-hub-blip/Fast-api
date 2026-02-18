@@ -4,15 +4,12 @@ import os
 from psycopg2.extras import RealDictCursor
 
 def get_db_connection():
-    """
-    Obtiene una conexión a la base de datos NeonDB
-    """
+   
     dsn = os.getenv("DATABASE_URL")
     if not dsn:
         raise RuntimeError("DATABASE_URL no está configurada en las variables de entorno")
     
     try:
-        # Conexión directa (psycopg2 entiende el formato postgresql://)
         conn = psycopg2.connect(dsn)
         return conn
     except Exception as e:
@@ -33,3 +30,4 @@ def get_db_connection_dict():
     except Exception as e:
         print(f"Error conectando a la base de datos: {e}")
         raise e
+
