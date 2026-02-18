@@ -30,7 +30,7 @@ class UserController:
             conn.commit()
             return {"resultado": "Usuario creado"}
 
-        except psycopg2.Error as err:
+        except psycopg.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
@@ -166,4 +166,5 @@ class UserController:
                 cursor.close()
             if conn:
                 conn.close()
+
 
