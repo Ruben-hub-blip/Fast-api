@@ -8,7 +8,6 @@ def get_db_connection():
     if not dsn:
         raise RuntimeError("DATABASE_URL no está configurada en las variables de entorno")
 
-    # Aquí sí puedes imprimir para depurar
     print("DATABASE_URL:", dsn)
 
     url = urlparse(dsn)
@@ -16,11 +15,11 @@ def get_db_connection():
 
     return psycopg2.connect(
         dbname=url.path[1:],          # "prueba"
-        user=url.username,            # "neondb_owner"
-        password=url.password,        # tu contraseña
-        host=url.hostname,            # host de NeonDB
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
         port=url.port or 5432,
-        sslmode=query_params.get("sslmode", ["require"])[0]
+        sslmode=query_params.get("sslmode", ["require"])[0]  # fuerza sslmode=require
     )
 
 
