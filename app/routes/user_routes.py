@@ -46,7 +46,7 @@ def login(user: UserLogin):
             )
 
         token = create_access_token({
-            "sub": result[1]  # email
+            "sub": result[1]
         })
 
         return {
@@ -65,6 +65,7 @@ def login(user: UserLogin):
             cursor.close()
         if conn:
             conn.close()
+
 
 
 
