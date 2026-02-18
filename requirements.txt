@@ -1,8 +1,9 @@
 fastapi
 uvicorn
-psycopg2-binary
+psycopg[binary]
 python-dotenv
 python-jose[cryptography]
+
 
 
 
