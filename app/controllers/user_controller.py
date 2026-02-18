@@ -1,7 +1,7 @@
 import psycopg2
 from fastapi import HTTPException
 from app.config.db_config import get_db_connection
-from models.user_model import User
+from app.models.user_model import User  # ✅ Ruta corregida
 from fastapi.encoders import jsonable_encoder
 
 
@@ -166,6 +166,7 @@ class UserController:
                 cursor.close()
             if conn:
                 conn.close()
+
 
 
 
