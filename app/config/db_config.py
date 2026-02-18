@@ -8,15 +8,15 @@ def get_db_connection():
     if not dsn:
         raise RuntimeError("DATABASE_URL no está configurada en las variables de entorno")
 
-    print("DATABASE_URL:", dsn)  # Log temporal para verificar
+    print("DATABASE_URL:", dsn)  # Log temporal
 
     url = urlparse(dsn)
     query_params = parse_qs(url.query)
 
-    # Construimos manualmente la cadena de conexión para evitar que psycopg2
-    # intente usar el socket local
+    dbname = url.path.lstrip("/")  # quitar la barra inicial
+
     conn_str = (
-        f"dbname={url.path[1:]} "
+        f"dbname={dbname} "
         f"user={url.username} "
         f"password={url.password} "
         f"host={url.hostname} "
@@ -24,8 +24,7 @@ def get_db_connection():
         f"sslmode={query_params.get('sslmode', ['require'])[0]}"
     )
 
-    print("Connection string:", conn_str)  # Verifica que host y puerto estén correctos
+    print("Connection string:", conn_str)
 
     return psycopg2.connect(conn_str)
-
 
