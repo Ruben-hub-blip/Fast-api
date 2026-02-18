@@ -20,5 +20,8 @@ def get_db_connection():
         sslmode=query_params.get("sslmode", ["require"])[0]
     )
 
+print("DATABASE_URL:", dsn)
+
+
 
 
