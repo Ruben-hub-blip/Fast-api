@@ -1,4 +1,4 @@
-import psycopg
+import psycopg2
 import os
 
 def get_db_connection():
@@ -8,5 +8,6 @@ def get_db_connection():
         raise Exception("DATABASE_URL no configurada")
 
     return psycopg.connect(database_url)
+
 
 
