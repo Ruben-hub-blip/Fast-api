@@ -12,12 +12,12 @@ def get_db_connection():
     query_params = parse_qs(url.query)
 
     return psycopg2.connect(
-        dbname=url.path[1:],          # quita el "/" inicial
-        user=url.username,
-        password=url.password,
-        host=url.hostname,
-        port=url.port,
-        sslmode=query_params.get("sslmode", ["require"])[0]  # usa sslmode=require por defecto
+        dbname=url.path[1:],          # "prueba"
+        user=url.username,            # "neondb_owner"
+        password=url.password,        # tu contraseña
+        host=url.hostname,            # ep-quiet-paper-ah5rgjf0-pooler.c-3.us-east-1.aws.neon.tech
+        port=url.port or 5432,
+        sslmode=query_params.get("sslmode", ["require"])[0]
     )
 
 
