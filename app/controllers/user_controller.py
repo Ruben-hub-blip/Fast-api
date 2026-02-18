@@ -4,84 +4,111 @@ from config.db_config import get_db_connection
 from models.user_model import User
 from fastapi.encoders import jsonable_encoder
 
+
 class UserController:
-        
-    def create_user(self, user: User):   
+
+    def create_user(self, user: User):
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO usuarios (nombre,apellido,cedula,edad,usuario,contrasena) VALUES (%s, %s, %s, %s, %s ,%s)", (user.nombre, user.apellido, user.cedula, user.edad, user.usuario, user.contrasena))
+
+            cursor.execute("""
+                INSERT INTO usuarios
+                (nombre, apellido, cedula, edad, email, contrasena)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (
+                user.nombre,
+                user.apellido,
+                user.cedula,
+                user.edad,
+                user.email,
+                user.contrasena
+            ))
+
             conn.commit()
-            conn.close()
             return {"resultado": "Usuario creado"}
+
         except psycopg2.Error as err:
-            conn.rollback()
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=str(err))
+
         finally:
-            conn.close()
-        
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
 
     def get_user(self, user_id: int):
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
+
             cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
             result = cursor.fetchone()
-            payload = []
-            content = {} 
-            
-            content={
-                    'id':int(result[0]),
-                    'nombre':result[1],
-                    'apellido':result[2],
-                    'cedula':result[3],
-                    'edad':int(result[4]),
-                    'usuario':result[5],
-                    'contrasena':result[6]
+
+            if not result:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            content = {
+                "id": result[0],
+                "nombre": result[1],
+                "apellido": result[2],
+                "cedula": result[3],
+                "edad": result[4],
+                "email": result[5],
+                "contrasena": result[6]
             }
-            payload.append(content)
-            
-            json_data = jsonable_encoder(content)            
-            if result:
-               return  json_data
-            else:
-                raise HTTPException(status_code=404, detail="User not found")  
-                
-        except psycopg2.Error as err:
-            conn.rollback()
+
+            return jsonable_encoder(content)
+
         finally:
-            conn.close()
-       
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+
     def get_users(self):
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
+
             cursor.execute("SELECT * FROM usuarios")
-            result = cursor.fetchall()
+            results = cursor.fetchall()
+
             payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'id':data[0],
-                    'nombre':data[1],
-                    'cedula':data[2],
-                    'edad':data[3],
-                    'usuario':data[4],
-                    'contrasena':data[5]
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="User not found")  
-                
-        except psycopg2.Error as err:
-            conn.rollback()
+
+            for row in results:
+                payload.append({
+                    "id": row[0],
+                    "nombre": row[1],
+                    "apellido": row[2],
+                    "cedula": row[3],
+                    "edad": row[4],
+                    "email": row[5],
+                    "contrasena": row[6]
+                })
+
+            return {"resultado": jsonable_encoder(payload)}
+
         finally:
-            conn.close()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
 
     def update_user(self, user_id: int, user: User):
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -92,7 +119,7 @@ class UserController:
                     apellido = %s,
                     cedula = %s,
                     edad = %s,
-                    usuario = %s,
+                    email = %s,
                     contrasena = %s
                 WHERE id = %s
             """, (
@@ -100,7 +127,7 @@ class UserController:
                 user.apellido,
                 user.cedula,
                 user.edad,
-                user.usuario,
+                user.email,
                 user.contrasena,
                 user_id
             ))
@@ -110,15 +137,18 @@ class UserController:
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="User not found")
 
-            return {"resultado": "Usuario actualizado correctamente"}
-
-        except psycopg2.Error as err:
-            conn.rollback()
+            return {"resultado": "Usuario actualizado"}
 
         finally:
-            conn.close()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
 
     def delete_user(self, user_id: int):
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -129,12 +159,10 @@ class UserController:
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="User not found")
 
-            return {"resultado": "Usuario eliminado correctamente"}
-
-        except psycopg2.Error as err:
-            conn.rollback()
+            return {"resultado": "Usuario eliminado"}
 
         finally:
-            conn.close()
-    
-##user_controller = UserController()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
