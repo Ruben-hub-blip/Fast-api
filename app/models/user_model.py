@@ -11,7 +11,7 @@ class User(BaseModel):
     contrasena: str
 
 class UserLogin(BaseModel):
-    usuario: EmailStr
+    email: EmailStr
     contrasena: str
 
 class UserResponse(BaseModel):
@@ -19,5 +19,6 @@ class UserResponse(BaseModel):
     nombre: str
     apellido: str
     email: EmailStr
+
 
 
