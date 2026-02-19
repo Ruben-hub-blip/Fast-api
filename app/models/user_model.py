@@ -7,7 +7,7 @@ class User(BaseModel):
     apellido: str
     cedula: str
     edad: int
-    usuario: EmailStr
+    email: EmailStr
     contrasena: str
 
 class UserLogin(BaseModel):
@@ -18,7 +18,8 @@ class UserResponse(BaseModel):
     id: int
     nombre: str
     apellido: str
-    usuario: EmailStr
+    email: EmailStr
+
 
 
 
