@@ -9,7 +9,7 @@ router = APIRouter()
 
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
 def create_access_token(data: dict):
     to_encode = data.copy()
