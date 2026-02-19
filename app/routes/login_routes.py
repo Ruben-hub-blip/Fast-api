@@ -28,7 +28,7 @@ async def login(user: UserLogin):
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Verificar si el usuario existe
+        
         cursor.execute(
             "SELECT id, email, contrasena FROM usuarios WHERE email = %s",
             (user.usuario,)
@@ -45,7 +45,7 @@ async def login(user: UserLogin):
         print(f" Usuario encontrado: {db_user[1]}")
         print(f" Contraseña DB: {db_user[2]}, Recibida: {user.contrasena}")
         
-        # Verificar contraseña
+        
         if db_user[2] != user.contrasena:
             print(" Contraseña incorrecta")
             raise HTTPException(
@@ -53,7 +53,7 @@ async def login(user: UserLogin):
                 detail="Credenciales incorrectas"
             )
         
-        # Todo bien, crear token
+        
         token = create_access_token({"sub": db_user[1]})
         print(f" Login exitoso para: {user.usuario}")
         
@@ -78,7 +78,7 @@ async def login(user: UserLogin):
         if conn:
             conn.close()
 
-# Endpoint de prueba
+
 @router.get("/login-test")
 async def login_test():
     return {"mensaje": "Endpoint de login funcionando"}
