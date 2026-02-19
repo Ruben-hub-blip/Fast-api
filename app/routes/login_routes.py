@@ -66,7 +66,7 @@ async def login(user: UserLogin):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error inesperado: {str(e)}")
+        print(f"Error inesperado: {str(e)}")
         print(traceback.format_exc())
         raise HTTPException(
             status_code=500,
