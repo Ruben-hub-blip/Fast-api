@@ -1,4 +1,3 @@
-# app/config/db_config.py
 import psycopg2
 import os
 from psycopg2.extras import RealDictCursor
@@ -27,5 +26,6 @@ def get_db_connection_dict():
     except Exception as e:
         print(f"Error conectando a la base de datos: {e}")
         raise e
+
 
 
