@@ -15,7 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(router)  
-
+app.include_router(user_router)
 @app.get("/")
 def read_root():
     return {
@@ -30,4 +30,5 @@ def read_root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "database_url": "configurada"}
+
 
