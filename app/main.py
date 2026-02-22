@@ -1,34 +1,22 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.routes import router 
-
-app = FastAPI()
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+from app.routes import (
+    roles_routes,
+    modulos_routes,
+    rol_modulo_routes,
+    usuarios_routes,
+    reportes_routes,
+    fotos_routes,
+    comentarios_routes,
+    historial_routes
 )
 
-app.include_router(router)  
-app.include_router(user_router)
-@app.get("/")
-def read_root():
-    return {
-        "mensaje": "API funcionando correctamente",
-        "endpoints": {
-            "login": "POST /login",
-            "login_test": "GET /login-test",
-            "docs": "/docs"
-        }
-    }
+app = FastAPI(title="API Reportes Comunidad")
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "database_url": "configurada"}
-
-
+app.include_router(roles_routes.router)
+app.include_router(modulos_routes.router)
+app.include_router(rol_modulo_routes.router)
+app.include_router(usuarios_routes.router)
+app.include_router(reportes_routes.router)
+app.include_router(fotos_routes.router)
+app.include_router(comentarios_routes.router)
+app.include_router(historial_routes.router)
