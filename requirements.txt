@@ -2,8 +2,7 @@ fastapi
 uvicorn
 psycopg2-binary
 python-dotenv
-python-jose[cryptography]
-email-validator
+
 
 
 
