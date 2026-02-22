@@ -13,7 +13,7 @@ from app.routes.historial_routes import router as historial_router
 app = FastAPI()
 
 origins = ["*"]
-
+print("CARGANDO MAIN NUEVO")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -34,3 +34,4 @@ app.include_router(historial_router)
 @app.get("/")
 def read_root():
     return {"mensaje": "API funcionando correctamente"}
+
