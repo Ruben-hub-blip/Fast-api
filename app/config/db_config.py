@@ -1,31 +1,15 @@
-import psycopg2
 import os
+import psycopg2
 from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-def get_db_connection():
-   
-    dsn = os.getenv("DATABASE_URL")
-    if not dsn:
-        raise RuntimeError("DATABASE_URL no esta configurada")
-    
-    try:
-        conn = psycopg2.connect(dsn)
-        return conn
-    except Exception as e:
-        print(f"Error conectando a la base de datos: {e}")
-        raise e
+load_dotenv()
 
-def get_db_connection_dict():
-    dsn = os.getenv("DATABASE_URL")
-    if not dsn:
-        raise RuntimeError("DATABASE_URL no está configurada")
-    
-    try:
-        conn = psycopg2.connect(dsn, cursor_factory=RealDictCursor)
-        return conn
-    except Exception as e:
-        print(f"Error conectando a la base de datos: {e}")
-        raise e
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-
+def get_connection():
+    return psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=RealDictCursor
+    )
 
