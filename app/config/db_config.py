@@ -1,15 +1,11 @@
-import os
 import psycopg2
-from psycopg2.extras import RealDictCursor
-from dotenv import load_dotenv
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
     return psycopg2.connect(
-        DATABASE_URL,
-        cursor_factory=RealDictCursor
+        host="ep-quiet-paper-ah5rgjf0-pooler.c-3.us-east-1.aws.neon.tech",
+        database="prueba",
+        user="neondb_owner",
+        password="npg_wv2aTECu8emJ",
+        port="5432",
+        sslmode="require"
     )
-

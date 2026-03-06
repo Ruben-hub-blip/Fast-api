@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from app.config.db import get_connection
+from app.config.db_config import get_connection
+from datetime import datetime
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
-
+# ✅ Obtener todos
 @router.get("/")
 def obtener_usuarios():
     conn = get_connection()
@@ -14,83 +15,102 @@ def obtener_usuarios():
     return data
 
 
+# ✅ Obtener por ID
 @router.get("/{id}")
 def obtener_usuario(id: int):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE id=%s", (id,))
-    data = cur.fetchone()
+    cur.execute("SELECT * FROM usuarios WHERE id = %s", (id,))
+    usuario = cur.fetchone()
     conn.close()
 
-    if not data:
+    if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    return data
+    return usuario
 
 
+# ✅ Crear usuario
 @router.post("/")
-def crear_usuario(usuario: dict):
+def crear_usuario(
+    nombre: str,
+    apellido: str,
+    cedula: str,
+    edad: int,
+    email: str,
+    contrasena: str,
+    id_rol: int,
+    id_barrio: int
+):
     conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
         INSERT INTO usuarios 
-        (nombre, apellido, cedula, email, contrasena, id_rol)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        RETURNING *
-    """, (
-        usuario["nombre"],
-        usuario["apellido"],
-        usuario["cedula"],
-        usuario["email"],
-        usuario["contrasena"],
-        usuario["id_rol"]
-    ))
+        (nombre, apellido, cedula, edad, email, contrasena, id_rol, id_barrio)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
+    """, (nombre, apellido, cedula, edad, email, contrasena, id_rol, id_barrio))
 
-    nuevo = cur.fetchone()
+    nuevo_id = cur.fetchone()[0]
     conn.commit()
     conn.close()
-    return nuevo
+
+    return {"mensaje": "Usuario creado", "id": nuevo_id}
 
 
+# ✅ Actualizar usuario
 @router.put("/{id}")
-def actualizar_usuario(id: int, usuario: dict):
+def actualizar_usuario(
+    id: int,
+    nombre: str,
+    apellido: str,
+    edad: int,
+    email: str,
+    id_rol: int,
+    id_barrio: int,
+    estado: str
+):
     conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
         UPDATE usuarios
-        SET nombre=%s, apellido=%s, edad=%s
+        SET nombre=%s,
+            apellido=%s,
+            edad=%s,
+            email=%s,
+            id_rol=%s,
+            id_barrio=%s,
+            estado=%s,
+            updated_at=%s
         WHERE id=%s
-        RETURNING *
     """, (
-        usuario["nombre"],
-        usuario["apellido"],
-        usuario["edad"],
+        nombre,
+        apellido,
+        edad,
+        email,
+        id_rol,
+        id_barrio,
+        estado,
+        datetime.now(),
         id
     ))
 
-    actualizado = cur.fetchone()
     conn.commit()
     conn.close()
 
-    if not actualizado:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    return actualizado
+    return {"mensaje": "Usuario actualizado"}
 
 
+# ✅ Eliminar usuario
 @router.delete("/{id}")
 def eliminar_usuario(id: int):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM usuarios WHERE id=%s RETURNING *", (id,))
-    eliminado = cur.fetchone()
+    cur.execute("DELETE FROM usuarios WHERE id=%s", (id,))
     conn.commit()
     conn.close()
-
-    if not eliminado:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
     return {"mensaje": "Usuario eliminado"}

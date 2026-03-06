@@ -9,8 +9,13 @@ from app.routes.reportes_routes import router as reportes_router
 from app.routes.comentarios_routes import router as comentarios_router
 from app.routes.fotos_routes import router as fotos_router
 from app.routes.historial_routes import router as historial_router
+from app.routes.auth_routes import router as auth_router
+
+from app.config.db_config import get_connection
+
 
 app = FastAPI()
+
 
 origins = ["*"]
 
@@ -22,6 +27,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(auth_router, tags=["Auth"])
 app.include_router(usuarios_router)
 app.include_router(roles_router)
 app.include_router(modulos_router)
@@ -30,6 +37,7 @@ app.include_router(reportes_router)
 app.include_router(comentarios_router)
 app.include_router(fotos_router)
 app.include_router(historial_router)
+
 
 @app.get("/")
 def read_root():
