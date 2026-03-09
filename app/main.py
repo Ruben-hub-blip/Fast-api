@@ -10,7 +10,7 @@ from app.routes.comentarios_routes import router as comentarios_router
 from app.routes.fotos_routes import router as fotos_router
 from app.routes.historial_routes import router as historial_router
 from app.routes.auth_routes import router as auth_router
-
+from app.routes import ubicaciones_routes
 from app.config.db_config import get_connection
 
 
@@ -34,6 +34,7 @@ app.include_router(roles_router)
 app.include_router(modulos_router)
 app.include_router(rol_modulo_router)
 app.include_router(reportes_router)
+app.include_router(ubicaciones_routes.router)
 app.include_router(comentarios_router)
 app.include_router(fotos_router)
 app.include_router(historial_router)

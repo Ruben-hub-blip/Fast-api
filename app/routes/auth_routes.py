@@ -7,34 +7,50 @@ router = APIRouter()
 
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
-
     email = form_data.username
     password = form_data.password
 
     conn = get_connection()
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    cursor.execute(
-        "SELECT id, email, contrasena, id_rol FROM usuarios WHERE email = %s",
+    # Obtener usuario
+    cur.execute(
+        "SELECT id, email, contrasena, id_rol, id_barrio FROM usuarios WHERE email=%s",
         (email,)
     )
-
-    user = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
+    user = cur.fetchone()
 
     if not user:
+        cur.close()
+        conn.close()
         raise HTTPException(status_code=401, detail="Usuario no encontrado")
 
-    if user[2] != password:
+    user_id, email_db, password_db, rol_id, id_barrio = user
+
+    if password != password_db:
+        cur.close()
+        conn.close()
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+    # Obtener módulos del rol
+    cur.execute("""
+        SELECT m.nombre
+        FROM rol_modulo rm
+        JOIN modulos m ON rm.id_modulo = m.id
+        WHERE rm.id_rol=%s AND rm.estado='activo'
+    """, (rol_id,))
+    modulos = [row[0] for row in cur.fetchall()]
+
+    cur.close()
+    conn.close()
 
     access_token = create_access_token(
         data={
-            "sub": user[1],
-            "user_id": user[0],
-            "rol_id": user[3]
+            "sub": email_db,
+            "user_id": user_id,
+            "rol_id": rol_id,
+            "id_barrio": id_barrio,
+            "modulos": modulos
         }
     )
 

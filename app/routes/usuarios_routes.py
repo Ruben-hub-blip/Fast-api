@@ -4,29 +4,39 @@ from datetime import datetime
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
-# ✅ Obtener todos
+# ✅ Obtener todos los usuarios
 @router.get("/")
 def obtener_usuarios():
     conn = get_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM usuarios")
-    data = cur.fetchall()
+    columnas = [desc[0] for desc in cur.description]
+    filas = cur.fetchall()
+
+    usuarios = [dict(zip(columnas, fila)) for fila in filas]
+
     conn.close()
-    return data
+    return usuarios
 
 
-# ✅ Obtener por ID
+# ✅ Obtener usuario por ID
 @router.get("/{id}")
 def obtener_usuario(id: int):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE id = %s", (id,))
-    usuario = cur.fetchone()
-    conn.close()
 
-    if not usuario:
+    cur.execute("SELECT * FROM usuarios WHERE id = %s", (id,))
+    fila = cur.fetchone()
+
+    if not fila:
+        conn.close()
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+    columnas = [desc[0] for desc in cur.description]
+    usuario = dict(zip(columnas, fila))
+
+    conn.close()
     return usuario
 
 
@@ -99,7 +109,6 @@ def actualizar_usuario(
 
     conn.commit()
     conn.close()
-
     return {"mensaje": "Usuario actualizado"}
 
 

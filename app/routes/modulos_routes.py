@@ -9,10 +9,17 @@ router = APIRouter(prefix="/modulos", tags=["Modulos"])
 def obtener_modulos():
     conn = get_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM modulos")
-    data = cur.fetchall()
+
+    columnas = [desc[0] for desc in cur.description]
+    filas = cur.fetchall()
+
+    modulos = [dict(zip(columnas, fila)) for fila in filas]
+
     conn.close()
-    return data
+
+    return modulos
 
 
 # ✅ Obtener por ID
@@ -20,15 +27,20 @@ def obtener_modulos():
 def obtener_modulo(id: int):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM modulos WHERE id=%s", (id,))
-    modulo = cur.fetchone()
-    conn.close()
 
-    if not modulo:
+    cur.execute("SELECT * FROM modulos WHERE id=%s", (id,))
+    fila = cur.fetchone()
+
+    if not fila:
+        conn.close()
         raise HTTPException(status_code=404, detail="Modulo no encontrado")
 
-    return modulo
+    columnas = [desc[0] for desc in cur.description]
+    modulo = dict(zip(columnas, fila))
 
+    conn.close()
+
+    return modulo
 
 # ✅ Crear
 @router.post("/")

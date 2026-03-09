@@ -9,10 +9,17 @@ router = APIRouter(prefix="/roles", tags=["Roles"])
 def obtener_roles():
     conn = get_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM roles")
-    data = cur.fetchall()
+
+    columnas = [desc[0] for desc in cur.description]
+    filas = cur.fetchall()
+
+    roles = [dict(zip(columnas, fila)) for fila in filas]
+
     conn.close()
-    return data
+
+    return roles
 
 
 # ✅ Obtener por ID
@@ -20,15 +27,20 @@ def obtener_roles():
 def obtener_role(id: int):
     conn = get_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM roles WHERE id=%s", (id,))
-    role = cur.fetchone()
+    fila = cur.fetchone()
+
+    if not fila:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Rol no encontrado")
+
+    columnas = [desc[0] for desc in cur.description]
+    role = dict(zip(columnas, fila))
+
     conn.close()
 
-    if not role:
-        raise HTTPException(status_code=404, detail="Role no encontrado")
-
     return role
-
 
 # ✅ Crear
 @router.post("/")
