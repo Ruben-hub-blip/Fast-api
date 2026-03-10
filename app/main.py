@@ -12,6 +12,7 @@ from app.routes.historial_routes import router as historial_router
 from app.routes.auth_routes import router as auth_router
 from app.routes import ubicaciones_routes
 from app.config.db_config import get_connection
+from app.routes import barrios
 
 
 app = FastAPI()
@@ -38,6 +39,7 @@ app.include_router(ubicaciones_routes.router)
 app.include_router(comentarios_router)
 app.include_router(fotos_router)
 app.include_router(historial_router)
+app.include_router(barrios.router, prefix="/ubicaciones")
 
 
 @app.get("/")
