@@ -6,7 +6,7 @@ from jose import jwt
 
 router = APIRouter(prefix="/historial", tags=["Historial_Reportes"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-SECRET_KEY = "YOUR_SECRET_KEY"
+from app.config.security import SECRET_KEY
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:

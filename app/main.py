@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routes.usuarios_routes import router as usuarios_router
 from app.routes.roles_routes import router as roles_router
@@ -16,6 +17,7 @@ from app.routes import barrios
 
 
 app = FastAPI()
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 origins = ["*"]

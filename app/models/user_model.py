@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field
 from typing import Optional
+
 
 class UserCreate(BaseModel):
     nombre: str
@@ -11,6 +13,7 @@ class UserCreate(BaseModel):
     id_rol: int
     id_barrio: int
 
+
 class UserUpdate(BaseModel):
     nombre: Optional[str] = None
     apellido: Optional[str] = None
@@ -20,9 +23,11 @@ class UserUpdate(BaseModel):
     id_barrio: Optional[int] = None
     estado: Optional[str] = None
 
+
 class UserLogin(BaseModel):
     email: EmailStr
     contrasena: str
+
 
 class UserResponse(BaseModel):
     id: int
@@ -31,3 +36,12 @@ class UserResponse(BaseModel):
     email: EmailStr
     edad: int
     estado: str
+
+
+# MODELO PARA CREAR REPORTES
+class ReporteCreate(BaseModel):
+    id_barrio: int
+    descripcion: str = Field(..., min_length=5)
+    direccion: str = Field(..., min_length=5)
+    latitud: float
+    longitud: float
